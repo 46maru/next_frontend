@@ -19,7 +19,7 @@ export default function TodoList() {
 
   const fetchTodos = async () =>{
     try {
-      const response = await axios.get('http://localhost:8000/api/todos');
+      const response = await axios.get('https://todo-api-3c0434147085.herokuapp.com/api/todos');
       setTodos(response.data);
     } catch(error) {
       console.error("エラーが発生しました", error);
@@ -31,7 +31,7 @@ export default function TodoList() {
       setIsLoading(true);
       try {
         console.log(newTodo);
-        await axios.post('http://localhost:8000/api/todos/',
+        await axios.post('https://todo-api-3c0434147085.herokuapp.com/api/todos/',
           { todo: newTodo },
           {headers: {'Content-Type': 'application/json'}}
         );
