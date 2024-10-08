@@ -1,83 +1,53 @@
-"use client"
-import { useEffect, useState } from "react";
-import axios from 'axios';
+import { useState } from 'react'
+import axios from 'axios'
 
 interface Todo {
-  id: number;
-  todo: string;
-  completed: boolean;
+  id: number
+  todo: string
+  completed: boolean
 }
 
-export default function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([])
-  const [newTodo, setNewTodo] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+interface TodoListProps {
+  todos: Todo[]
+  onUpdateTodo: () => void
+}
 
-  useEffect (() => {
-    fetchTodos();
-  }, []);
+export default function TodoList({ todos, onUpdateTodo }: TodoListProps) {
+  const [isUpdating, setIsUpdating] = useState<number | null>(null)
 
-  const fetchTodos = async () =>{
+  const handleCheckboxChange = async (todo: Todo) => {
+    setIsUpdating(todo.id)
     try {
-      const response = await axios.get('https://todo-api-3c0434147085.herokuapp.com/api/todos');
-      setTodos(response.data);
-    } catch(error) {
-      console.error("エラーが発生しました", error);
-    }
-  }
-
-  const addTodo = async () => {
-    if (newTodo) {
-      setIsLoading(true);
-      try {
-        console.log(newTodo);
-        await axios.post('https://todo-api-3c0434147085.herokuapp.com/api/todos/',
-          { todo: newTodo },
-          {headers: {'Content-Type': 'application/json'}}
-        );
-        setNewTodo("");
-        await fetchTodos();
-      } catch (error) {
-        console.error("エラーが発生しました", error);
-      }
-      finally {
-        setIsLoading(false);
-      }
+      await axios.put(
+        `https://todo-api-3c0434147085.herokuapp.com/api/todos/${todo.id}`,
+        { ...todo, completed: true },
+        { headers: { 'Content-Type': 'application/json' } }
+      )
+      onUpdateTodo()
+    } catch (error) {
+      console.error("エラーが発生しました", error)
+    } finally {
+      setIsUpdating(null)
     }
   }
 
   return (
-    <div className="w-full max-w-md bg-white shadow-lg rounded-lg overflow-hidden">
-      <div className="px-4 py-5 sm:p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Todo リスト</h2>
-        <div className="flex space-x-2 mb-4">
-          <input
-            type="text"
-            placeholder="新しい Todo を入力"
-            value={newTodo}
-            onChange={(e) => setNewTodo(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                addTodo()
-              }
-            }}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-          <button
-            onClick={addTodo}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            {isLoading ? '追加中...' : '追加'}
-          </button>
-        </div>
-        <ul className="space-y-2">
-          {todos.map((todo, index) => (
-            <li key={index} className="bg-gray-50 p-2 rounded-md flex items-center justify-between">
-            {todo.todo}
-            </li>
-          ))}
-        </ul>
-        </div>
-    </div>
-    )
+    <ul className="space-y-2">
+      {todos.filter(todo => !todo.completed).map((todo) => (
+        <li key={todo.id} className="bg-gray-50 p-2 rounded-md flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => handleCheckboxChange(todo)}
+              disabled={isUpdating === todo.id}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <span>{todo.todo}</span>
+          </div>
+          {isUpdating === todo.id && <span className="text-sm text-gray-500">更新中...</span>}
+        </li>
+      ))}
+    </ul>
+  )
 }

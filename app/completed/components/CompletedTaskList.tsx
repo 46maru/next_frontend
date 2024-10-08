@@ -1,32 +1,39 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import axios from 'axios'
 
-type Task = {
+type Todo = {
   id: number
-  title: string
-  completedAt: string
+  todo: string
+  completed: boolean
 }
 
 export function CompletedTaskList() {
-  const [completedTasks, setCompletedTasks] = useState<Task[]>([])
+  const [completedTodos, setCompletedTodos] = useState<Todo[]>([])
 
   useEffect(() => {
-    // 通常はここでAPIからデータを取得します
-    // この例では、モックデータを使用しています
-    const mockTasks: Task[] = [
-      { id: 1, title: "買い物リストを作成(例)", completedAt: "2023-06-01 10:30" },
-    ]
-    setCompletedTasks(mockTasks)
+    fetchCompletedTodos()
   }, [])
+
+  const fetchCompletedTodos = async () => {
+    try {
+      const response = await axios.get('https://todo-api-3c0434147085.herokuapp.com/api/todos')
+      const allTodos: Todo[] = response.data
+      const completed = allTodos.filter(todo => todo.completed)
+      setCompletedTodos(completed)
+    } catch (error) {
+      console.error("エラーが発生しました", error)
+    }
+  }
 
   return (
     <ul className="space-y-4">
-      {completedTasks.map((task) => (
-        <li key={task.id} className="bg-white shadow rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-2">{task.title}</h3>
+      {completedTodos.map((todo) => (
+        <li key={todo.id} className="bg-white shadow rounded-lg p-4">
+          <h3 className="text-lg font-semibold mb-2">{todo.todo}</h3>
           <p className="text-sm text-gray-600">
-            完了日時: {task.completedAt}
+            完了済み
           </p>
         </li>
       ))}
