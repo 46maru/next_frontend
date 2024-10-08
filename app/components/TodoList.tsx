@@ -19,7 +19,7 @@ export default function TodoList({ todos, onUpdateTodo }: TodoListProps) {
     setIsUpdating(todo.id)
     try {
       await axios.put(
-        `https://todo-api-3c0434147085.herokuapp.com/api/todos/${todo.id}`,
+        `https://todo-api-3c0434147085.herokuapp.com/api/todos/${todo.id}/`,
         { ...todo, completed: true },
         { headers: { 'Content-Type': 'application/json' } }
       )
