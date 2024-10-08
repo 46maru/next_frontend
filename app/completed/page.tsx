@@ -3,15 +3,13 @@ import Sidebar from '@/components/Sidebar'
 
 export default function CompletedTasksPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">完了済みタスク</h1>
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="md:w-3/4">
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 ml-64 p-8">
+        <h1 className="text-3xl font-bold mb-6">完了済みタスク</h1>
+        <main className="w-full p-4 border-gray-200 rounded-lg">
           <CompletedTaskList />
-        </div>
-        <div className="md:w-1/4">
-          <Sidebar />
-        </div>
+        </main>
       </div>
     </div>
   )
