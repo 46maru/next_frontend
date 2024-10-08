@@ -40,7 +40,7 @@ export default function TodoList({ todos, onUpdateTodo }: TodoListProps) {
               type="checkbox"
               checked={todo.completed}
               onChange={() => handleCheckboxChange(todo)}
-              onTouchStart={() => handleCheckboxChange(todo)}
+              onClick={() => handleCheckboxChange(todo)}
               disabled={isUpdating === todo.id}
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
